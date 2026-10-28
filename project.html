@@ -1,0 +1,2073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ORCHIDS — Smart Carbon Footprint Calculator</title>
+  <meta name="description" content="Calculate, analyze, and reduce your carbon footprint with ORCHIDS. Designed & Developed by Team Triple Impact." />
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: '#12372A',
+            emerald: '#16A36A',
+            mint: '#DDF7E8',
+            offwhite: '#F8FAF7',
+            charcoal: '#202923',
+            softgray: '#E8EDE8',
+          },
+          fontFamily: {
+            sans: ['Inter', 'Manrope', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #F8FAF7;
+      color: #202923;
+      font-family: 'Inter', sans-serif;
+      scroll-behavior: smooth;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid #E8EDE8;
+    }
+    .slider-accent {
+      accent-color: #16A36A;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printReportSection, #printReportSection * {
+        visibility: visible;
+      }
+      #printReportSection {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: #fff;
+        padding: 20px;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-mint selection:text-forest">
+
+  <!-- ================= TOP NOTIFICATION / BRAND PILL ================= -->
+  <div class="bg-forest text-mint text-xs py-2 px-4 text-center border-b border-emerald/20 flex items-center justify-center space-x-2">
+    <span class="inline-block w-2 h-2 rounded-full bg-emerald animate-pulse"></span>
+    <span class="font-medium tracking-wide">ORCHIDS Platform • Designed &amp; Developed by <strong>Team Triple Impact</strong></span>
+    <span class="hidden md:inline text-white/40">|</span>
+    <span class="hidden md:inline text-white/70">Small Changes. Measurable Impact.</span>
+  </div>
+
+  <!-- ================= NAVIGATION BAR ================= -->
+  <header class="sticky top-0 z-50 glass-card border-b border-softgray shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#home" onclick="showView('home')" class="flex items-center space-x-3 group">
+        <div class="w-11 h-11 rounded-xl bg-forest flex items-center justify-center text-mint shadow-md group-hover:scale-105 transition-transform duration-200">
+          <i data-lucide="sprout" class="w-6 h-6 text-emerald"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-1.5">
+            <span class="text-2xl font-extrabold tracking-tight text-forest">ORCHIDS</span>
+            <span class="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-mint text-emerald">PRO</span>
+          </div>
+          <p class="text-[11px] text-charcoal/70 tracking-wider">Carbon Footprint Calculator</p>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Links -->
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-charcoal/80">
+        <button onclick="showView('home')" class="hover:text-emerald transition-colors py-1">Home</button>
+        <button onclick="showView('calculator')" class="hover:text-emerald transition-colors py-1">Calculator</button>
+        <button onclick="showView('dashboard')" class="hover:text-emerald transition-colors py-1">Dashboard</button>
+        <button onclick="showView('simulator')" class="hover:text-emerald transition-colors py-1">What-If Simulator</button>
+        <button onclick="showView('challenges')" class="hover:text-emerald transition-colors py-1">Eco Challenges</button>
+        <button onclick="showView('methodology')" class="hover:text-emerald transition-colors py-1">Methodology</button>
+        <button onclick="showView('about')" class="hover:text-emerald transition-colors py-1">About</button>
+      </nav>
+
+      <!-- Action Button -->
+      <div class="hidden lg:flex items-center space-x-4">
+        <button onclick="showView('calculator')" class="bg-forest hover:bg-forest/90 text-mint font-semibold text-sm px-5 py-2.5 rounded-lg shadow-sm transition-all duration-200 flex items-center space-x-2">
+          <i data-lucide="calculator" class="w-4 h-4 text-emerald"></i>
+          <span>Calculate Now</span>
+        </button>
+      </div>
+
+      <!-- Mobile Hamburger Button -->
+      <button onclick="toggleMobileMenu()" class="md:hidden text-charcoal p-2 focus:outline-none" aria-label="Toggle Navigation">
+        <i data-lucide="menu" class="w-6 h-6"></i>
+      </button>
+    </div>
+
+    <!-- Mobile Dropdown -->
+    <div id="mobileMenu" class="hidden md:hidden border-t border-softgray bg-white px-4 pt-3 pb-6 space-y-3 shadow-lg">
+      <button onclick="showView('home'); toggleMobileMenu()" class="block w-full text-left py-2 font-medium text-charcoal hover:text-emerald">Home</button>
+      <button onclick="showView('calculator'); toggleMobileMenu()" class="block w-full text-left py-2 font-medium text-charcoal hover:text-emerald">Calculator</button>
+      <button onclick="showView('dashboard'); toggleMobileMenu()" class="block w-full text-left py-2 font-medium text-charcoal hover:text-emerald">Dashboard</button>
+      <button onclick="showView('simulator'); toggleMobileMenu()" class="block w-full text-left py-2 font-medium text-charcoal hover:text-emerald">What-If Simulator</button>
+      <button onclick="showView('challenges'); toggleMobileMenu()" class="block w-full text-left py-2 font-medium text-charcoal hover:text-emerald">Eco Challenges</button>
+      <button onclick="showView('methodology'); toggleMobileMenu()" class="block w-full text-left py-2 font-medium text-charcoal hover:text-emerald">Methodology</button>
+      <button onclick="showView('about'); toggleMobileMenu()" class="block w-full text-left py-2 font-medium text-charcoal hover:text-emerald">About</button>
+      <button onclick="showView('calculator'); toggleMobileMenu()" class="w-full mt-2 bg-forest text-mint py-3 rounded-lg font-semibold flex items-center justify-center space-x-2">
+        <i data-lucide="calculator" class="w-4 h-4 text-emerald"></i>
+        <span>Start Calculation</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTAINER ================= -->
+  <main class="flex-grow">
+    
+    <!-- ======================================================== -->
+    <!-- VIEW 1: HOMEPAGE                                         -->
+    <!-- ======================================================== -->
+    <section id="view-home" class="view-panel block">
+      
+      <!-- HERO SECTION -->
+      <div class="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28 bg-gradient-to-b from-mint/40 via-offwhite to-offwhite">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <div class="lg:col-span-7 space-y-6">
+              <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-mint/80 border border-emerald/30 text-forest text-xs font-semibold tracking-wide">
+                <i data-lucide="leaf" class="w-4 h-4 text-emerald"></i>
+                <span>Certified Science-Grounded Calculation Engine</span>
+              </div>
+              
+              <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-forest tracking-tight leading-[1.15]">
+                Understand Your Carbon Footprint. <br class="hidden sm:inline" />
+                <span class="text-emerald">Shape a Greener Future.</span>
+              </h1>
+              
+              <p class="text-lg text-charcoal/80 max-w-2xl leading-relaxed">
+                Discover how your daily choices affect the planet. Calculate your carbon emissions, explore practical ways to reduce them, and track your progress toward a more sustainable lifestyle.
+              </p>
+
+              <div class="pt-4 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                <button onclick="showView('calculator')" class="bg-forest hover:bg-forest/90 text-mint px-7 py-3.5 rounded-xl font-bold shadow-md hover:shadow-lg transition flex items-center justify-center space-x-3 text-base">
+                  <span>Calculate My Footprint</span>
+                  <i data-lucide="arrow-right" class="w-5 h-5 text-emerald"></i>
+                </button>
+                <button onclick="showView('methodology')" class="border-2 border-forest text-forest hover:bg-forest/5 px-7 py-3.5 rounded-xl font-semibold transition flex items-center justify-center space-x-2 text-base">
+                  <span>Explore Methodology</span>
+                </button>
+              </div>
+
+              <!-- Key Value Metrics -->
+              <div class="pt-8 border-t border-softgray grid grid-cols-3 gap-6">
+                <div>
+                  <p class="text-2xl lg:text-3xl font-extrabold text-forest">1.9 t</p>
+                  <p class="text-xs text-charcoal/70 mt-1">India National Benchmark (CO₂e/yr)</p>
+                </div>
+                <div>
+                  <p class="text-2xl lg:text-3xl font-extrabold text-forest">4.7 t</p>
+                  <p class="text-xs text-charcoal/70 mt-1">Global Average per Capita</p>
+                </div>
+                <div>
+                  <p class="text-2xl lg:text-3xl font-extrabold text-emerald">2.0 t</p>
+                  <p class="text-xs text-charcoal/70 mt-1">Paris 2030 Climate Goal Target</p>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Hero Visual Card -->
+            <div class="lg:col-span-5">
+              <div class="relative mx-auto max-w-md lg:max-w-none">
+                <div class="absolute -inset-2 bg-gradient-to-r from-emerald/20 to-mint/40 rounded-3xl blur-xl opacity-75"></div>
+                <div class="relative glass-card rounded-2xl p-6 sm:p-8 shadow-xl border border-white">
+                  
+                  <div class="flex items-center justify-between pb-4 border-b border-softgray">
+                    <div class="flex items-center space-x-2">
+                      <div class="w-3 h-3 rounded-full bg-emerald"></div>
+                      <span class="text-xs font-bold text-forest tracking-wider uppercase">Live Activity Breakdown</span>
+                    </div>
+                    <span class="text-xs px-2 py-1 bg-mint text-emerald font-semibold rounded">Verified Factors</span>
+                  </div>
+
+                  <!-- Mini Chart Showcase -->
+                  <div class="py-6 space-y-4">
+                    <div>
+                      <div class="flex justify-between text-xs font-semibold mb-1">
+                        <span class="flex items-center space-x-1.5"><i data-lucide="zap" class="w-3.5 h-3.5 text-amber-500"></i><span>Electricity &amp; Home Energy</span></span>
+                        <span class="text-forest">38%</span>
+                      </div>
+                      <div class="w-full bg-softgray rounded-full h-2.5">
+                        <div class="bg-forest h-2.5 rounded-full" style="width: 38%"></div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div class="flex justify-between text-xs font-semibold mb-1">
+                        <span class="flex items-center space-x-1.5"><i data-lucide="car" class="w-3.5 h-3.5 text-emerald"></i><span>Transportation &amp; Commute</span></span>
+                        <span class="text-forest">32%</span>
+                      </div>
+                      <div class="w-full bg-softgray rounded-full h-2.5">
+                        <div class="bg-emerald h-2.5 rounded-full" style="width: 32%"></div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div class="flex justify-between text-xs font-semibold mb-1">
+                        <span class="flex items-center space-x-1.5"><i data-lucide="utensils" class="w-3.5 h-3.5 text-orange-500"></i><span>Food &amp; Nutrition</span></span>
+                        <span class="text-forest">22%</span>
+                      </div>
+                      <div class="w-full bg-softgray rounded-full h-2.5">
+                        <div class="bg-orange-400 h-2.5 rounded-full" style="width: 22%"></div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div class="flex justify-between text-xs font-semibold mb-1">
+                        <span class="flex items-center space-x-1.5"><i data-lucide="trash-2" class="w-3.5 h-3.5 text-teal-600"></i><span>Waste &amp; Consumption</span></span>
+                        <span class="text-forest">8%</span>
+                      </div>
+                      <div class="w-full bg-softgray rounded-full h-2.5">
+                        <div class="bg-teal-500 h-2.5 rounded-full" style="width: 8%"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bg-forest text-white p-4 rounded-xl flex items-center justify-between">
+                    <div>
+                      <p class="text-[11px] text-mint uppercase font-semibold">Simulated Potential Savings</p>
+                      <p class="text-lg font-extrabold text-mint mt-0.5">- 680 kg CO₂e / yr</p>
+                    </div>
+                    <button onclick="showView('simulator')" class="text-xs bg-emerald hover:bg-emerald/90 text-white font-bold py-2 px-3 rounded-lg transition">
+                      Try Simulator
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- HOW ORCHIDS WORKS IN 3 STEPS -->
+      <div class="py-20 bg-white border-y border-softgray">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center max-w-3xl mx-auto space-y-4">
+            <span class="text-xs uppercase font-extrabold tracking-widest text-emerald bg-mint px-3 py-1 rounded-full">Streamlined Process</span>
+            <h2 class="text-3xl font-extrabold text-forest">How ORCHIDS Works</h2>
+            <p class="text-charcoal/70 text-base">In three simple steps, transform everyday habits into accurate emissions data and clear, targeted environmental actions.</p>
+          </div>
+
+          <div class="mt-14 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-offwhite p-8 rounded-2xl border border-softgray relative group hover:shadow-md transition">
+              <div class="w-12 h-12 bg-mint rounded-xl flex items-center justify-center text-forest font-extrabold text-lg mb-6">
+                1
+              </div>
+              <h3 class="text-xl font-bold text-forest mb-3">Input Daily Habits</h3>
+              <p class="text-charcoal/70 text-sm leading-relaxed">
+                Provide basic information across home electricity, commute modes, dietary habits, and waste generation in our guided 5-step calculator.
+              </p>
+            </div>
+
+            <div class="bg-offwhite p-8 rounded-2xl border border-softgray relative group hover:shadow-md transition">
+              <div class="w-12 h-12 bg-mint rounded-xl flex items-center justify-center text-forest font-extrabold text-lg mb-6">
+                2
+              </div>
+              <h3 class="text-xl font-bold text-forest mb-3">Real-World Scientific Analysis</h3>
+              <p class="text-charcoal/70 text-sm leading-relaxed">
+                Our calculation engine applies documented emission factors from the CEA (India) and IPCC/DEFRA to compute your exact carbon footprint in kg and tonnes CO₂e.
+              </p>
+            </div>
+
+            <div class="bg-offwhite p-8 rounded-2xl border border-softgray relative group hover:shadow-md transition">
+              <div class="w-12 h-12 bg-mint rounded-xl flex items-center justify-center text-forest font-extrabold text-lg mb-6">
+                3
+              </div>
+              <h3 class="text-xl font-bold text-forest mb-3">Take Action &amp; Track</h3>
+              <p class="text-charcoal/70 text-sm leading-relaxed">
+                Explore interactive what-if scenarios, adopt prioritized reduction strategies, take on 7-day sustainability challenges, and download certified reports.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KEY CALCULATOR CATEGORIES -->
+      <div class="py-20 bg-offwhite">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+            <div>
+              <span class="text-xs uppercase font-extrabold tracking-widest text-emerald bg-mint px-3 py-1 rounded-full">Covered Scopes</span>
+              <h2 class="text-3xl font-extrabold text-forest mt-2">Comprehensive Emission Pillars</h2>
+            </div>
+            <p class="text-charcoal/70 text-sm max-w-md mt-4 md:mt-0">Every calculation accounts for direct and indirect lifestyle factors using validated per-capita allocation.</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Card 1 -->
+            <div class="bg-white p-6 rounded-2xl border border-softgray shadow-sm hover:border-emerald/40 transition">
+              <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center mb-4">
+                <i data-lucide="zap" class="w-5 h-5"></i>
+              </div>
+              <h3 class="font-bold text-forest text-lg">Home Electricity</h3>
+              <p class="text-xs text-charcoal/70 mt-2 leading-relaxed">Monthly kWh consumption, household size sharing, and cooking fuel types (LPG cylinder, PNG, induction).</p>
+              <div class="mt-4 pt-3 border-t border-softgray text-[11px] font-semibold text-emerald">Factor: 0.716 kg CO₂e/kWh (CEA)</div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="bg-white p-6 rounded-2xl border border-softgray shadow-sm hover:border-emerald/40 transition">
+              <div class="w-10 h-10 rounded-lg bg-emerald/10 text-emerald flex items-center justify-center mb-4">
+                <i data-lucide="car" class="w-5 h-5"></i>
+              </div>
+              <h3 class="font-bold text-forest text-lg">Transportation</h3>
+              <p class="text-xs text-charcoal/70 mt-2 leading-relaxed">Daily/monthly travel by petrol/diesel car, EV, two-wheeler, city buses, metro rail, and air travel.</p>
+              <div class="mt-4 pt-3 border-t border-softgray text-[11px] font-semibold text-emerald">Modal Factors: 0.018 – 0.171 kg/km</div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bg-white p-6 rounded-2xl border border-softgray shadow-sm hover:border-emerald/40 transition">
+              <div class="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center mb-4">
+                <i data-lucide="utensils" class="w-5 h-5"></i>
+              </div>
+              <h3 class="font-bold text-forest text-lg">Food &amp; Diet</h3>
+              <p class="text-xs text-charcoal/70 mt-2 leading-relaxed">Dietary styles (heavy meat to vegan), meal frequency, food waste proportion, and seasonal local sourcing.</p>
+              <div class="mt-4 pt-3 border-t border-softgray text-[11px] font-semibold text-emerald">Poore &amp; Nemecek Science Benchmark</div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="bg-white p-6 rounded-2xl border border-softgray shadow-sm hover:border-emerald/40 transition">
+              <div class="w-10 h-10 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center mb-4">
+                <i data-lucide="trash-2" class="w-5 h-5"></i>
+              </div>
+              <h3 class="font-bold text-forest text-lg">Waste &amp; Lifestyle</h3>
+              <p class="text-xs text-charcoal/70 mt-2 leading-relaxed">Solid waste generation volume, recycling segregation percentage, composting, and single-use plastic usage.</p>
+              <div class="mt-4 pt-3 border-t border-softgray text-[11px] font-semibold text-emerald">IPCC Waste Methane Decay Model</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ SECTION -->
+      <div class="py-20 bg-white border-t border-softgray">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6">
+          <div class="text-center mb-12">
+            <span class="text-xs uppercase font-extrabold tracking-widest text-emerald bg-mint px-3 py-1 rounded-full">Knowledge Base</span>
+            <h2 class="text-3xl font-extrabold text-forest mt-2">Frequently Asked Questions</h2>
+          </div>
+
+          <div class="space-y-4">
+            <details class="group bg-offwhite p-5 rounded-xl border border-softgray">
+              <summary class="flex justify-between items-center font-bold text-forest cursor-pointer list-none">
+                <span>What is a carbon footprint and why is it measured in CO₂e?</span>
+                <i data-lucide="chevron-down" class="w-5 h-5 text-emerald group-open:rotate-180 transition-transform"></i>
+              </summary>
+              <p class="text-sm text-charcoal/80 mt-3 leading-relaxed">
+                A carbon footprint measures the total greenhouse gas (GHG) emissions caused directly and indirectly by an individual or organization. Because different gases (like methane and nitrous oxide) trap heat at different intensities, they are converted into Carbon Dioxide Equivalent (CO₂e) using their Global Warming Potential (GWP) over 100 years.
+              </p>
+            </details>
+
+            <details class="group bg-offwhite p-5 rounded-xl border border-softgray">
+              <summary class="flex justify-between items-center font-bold text-forest cursor-pointer list-none">
+                <span>Why does ORCHIDS use India-specific electricity factors?</span>
+                <i data-lucide="chevron-down" class="w-5 h-5 text-emerald group-open:rotate-180 transition-transform"></i>
+              </summary>
+              <p class="text-sm text-charcoal/80 mt-3 leading-relaxed">
+                Electricity emission intensity varies dramatically worldwide based on power generation sources. In India, coal represents a significant portion of base power, resulting in ~0.716 kg CO₂e/kWh according to the Central Electricity Authority (CEA Baseline Database v19). Generic international calculators that use US or European grid averages significantly miscalculate Indian emissions.
+              </p>
+            </details>
+
+            <details class="group bg-offwhite p-5 rounded-xl border border-softgray">
+              <summary class="flex justify-between items-center font-bold text-forest cursor-pointer list-none">
+                <span>Is my data stored securely?</span>
+                <i data-lucide="chevron-down" class="w-5 h-5 text-emerald group-open:rotate-180 transition-transform"></i>
+              </summary>
+              <p class="text-sm text-charcoal/80 mt-3 leading-relaxed">
+                Yes. ORCHIDS operates on a transparent, client-side first architecture. Your calculation records and eco-challenge completions are stored locally in your browser's LocalStorage. No personal information is secretly transmitted or sold to third-party ad networks.
+              </p>
+            </details>
+          </div>
+        </div>
+      </div>
+
+      <!-- FINAL CTA -->
+      <div class="py-16 bg-forest text-white text-center">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6">
+          <h2 class="text-3xl font-extrabold tracking-tight text-mint">Ready to Discover Your Impact?</h2>
+          <p class="mt-3 text-white/80 text-base max-w-xl mx-auto">
+            Take 3 minutes to complete our interactive lifestyle survey and receive a customized reduction roadmap.
+          </p>
+          <div class="mt-8 flex justify-center space-x-4">
+            <button onclick="showView('calculator')" class="bg-emerald hover:bg-emerald/90 text-white font-bold px-8 py-3.5 rounded-xl shadow-lg transition">
+              Launch Carbon Calculator
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 2: MULTI-STEP CALCULATOR                            -->
+    <!-- ======================================================== -->
+    <section id="view-calculator" class="view-panel hidden py-12 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+      
+      <!-- Calculator Header -->
+      <div class="text-center mb-8">
+        <span class="text-xs uppercase font-extrabold tracking-widest text-emerald bg-mint px-3 py-1 rounded-full">Interactive Assessment</span>
+        <h1 class="text-3xl font-extrabold text-forest mt-2">Lifestyle Carbon Footprint Calculator</h1>
+        <p class="text-sm text-charcoal/70 mt-1">Answer the questions below to calculate your estimated annual emissions.</p>
+      </div>
+
+      <!-- Step Indicator Bar -->
+      <div class="mb-10 bg-white p-4 rounded-2xl border border-softgray shadow-sm">
+        <div class="flex items-center justify-between text-xs font-semibold text-charcoal/70 mb-2">
+          <span id="stepLabelIndicator">Step 1 of 5: Home &amp; Energy</span>
+          <span id="stepPercentIndicator" class="text-emerald font-bold">20% Completed</span>
+        </div>
+        <div class="w-full bg-softgray rounded-full h-2">
+          <div id="stepProgressBar" class="bg-emerald h-2 rounded-full transition-all duration-300" style="width: 20%"></div>
+        </div>
+        
+        <div class="grid grid-cols-5 text-center mt-3 text-[11px] font-medium text-charcoal/60">
+          <span id="navStep1" class="text-emerald font-bold">1. Energy</span>
+          <span id="navStep2">2. Commute</span>
+          <span id="navStep3">3. Food</span>
+          <span id="navStep4">4. Waste</span>
+          <span id="navStep5">5. Review</span>
+        </div>
+      </div>
+
+      <!-- STEP FORM CARDS -->
+      <div class="bg-white rounded-2xl border border-softgray p-6 sm:p-10 shadow-sm relative">
+
+        <!-- STEP 1: HOME & ELECTRICITY -->
+        <div id="calcStep1" class="calc-step-panel block space-y-6">
+          <div class="border-b border-softgray pb-4">
+            <h2 class="text-xl font-bold text-forest flex items-center space-x-2">
+              <i data-lucide="zap" class="w-5 h-5 text-amber-500"></i>
+              <span>Step 1: Electricity &amp; Home Energy</span>
+            </h2>
+            <p class="text-xs text-charcoal/70 mt-1">Estimates based on CEA India Grid Factor (0.716 kg CO₂e/kWh) and cooking fuel consumption.</p>
+          </div>
+
+          <div class="space-y-5">
+            <div>
+              <label class="block text-sm font-semibold text-charcoal mb-1" for="inputElectricity">
+                Monthly Electricity Consumption (kWh)
+              </label>
+              <div class="relative">
+                <input type="number" id="inputElectricity" min="0" max="5000" value="220" class="w-full px-4 py-2.5 rounded-lg border border-softgray focus:ring-2 focus:ring-emerald focus:border-emerald text-sm" placeholder="e.g. 200" />
+                <span class="absolute right-3 top-2.5 text-xs text-charcoal/50">kWh / month</span>
+              </div>
+              <p class="text-[11px] text-charcoal/60 mt-1">Average Indian urban household uses 150–300 kWh/month. Check your monthly power bill.</p>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-charcoal mb-1" for="inputHousehold">
+                Household Size (People sharing this electricity)
+              </label>
+              <input type="number" id="inputHousehold" min="1" max="15" value="3" class="w-full px-4 py-2.5 rounded-lg border border-softgray focus:ring-2 focus:ring-emerald focus:border-emerald text-sm" />
+              <p class="text-[11px] text-charcoal/60 mt-1">Used to compute your individual per-capita energy allocation.</p>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-charcoal mb-1">
+                Primary Cooking Fuel
+              </label>
+              <select id="inputCookingFuel" class="w-full px-4 py-2.5 rounded-lg border border-softgray focus:ring-2 focus:ring-emerald focus:border-emerald text-sm">
+                <option value="lpg">LPG Cylinder (14.2 kg standard)</option>
+                <option value="png">Piped Natural Gas (PNG)</option>
+                <option value="electric">Electric Induction (Included in kWh above)</option>
+              </select>
+            </div>
+
+            <div id="lpgUsageField">
+              <label class="block text-sm font-semibold text-charcoal mb-1" for="inputLpgMonths">
+                How many months does 1 LPG cylinder last in your home?
+              </label>
+              <input type="number" id="inputLpgMonths" min="0.5" max="12" step="0.5" value="1.5" class="w-full px-4 py-2.5 rounded-lg border border-softgray focus:ring-2 focus:ring-emerald focus:border-emerald text-sm" />
+            </div>
+
+            <div class="p-3 bg-mint/50 rounded-xl border border-emerald/20 flex items-center justify-between">
+              <div>
+                <span class="text-xs font-bold text-forest">Rooftop Solar or Green Tariff?</span>
+                <p class="text-[11px] text-charcoal/70">Does your home generate clean solar energy?</p>
+              </div>
+              <input type="checkbox" id="inputSolarClean" class="w-5 h-5 text-emerald rounded border-softgray focus:ring-emerald slider-accent" />
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: TRANSPORTATION -->
+        <div id="calcStep2" class="calc-step-panel hidden space-y-6">
+          <div class="border-b border-softgray pb-4">
+            <h2 class="text-xl font-bold text-forest flex items-center space-x-2">
+              <i data-lucide="car" class="w-5 h-5 text-emerald"></i>
+              <span>Step 2: Transportation &amp; Commute</span>
+            </h2>
+            <p class="text-xs text-charcoal/70 mt-1">Modal distance accounting for fuel efficiencies and public transit factors.</p>
+          </div>
+
+          <div class="space-y-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-semibold text-charcoal mb-1" for="inputCarKm">
+                  Car Travel (Monthly km)
+                </label>
+                <input type="number" id="inputCarKm" min="0" max="10000" value="350" class="w-full px-4 py-2.5 rounded-lg border border-softgray focus:ring-2 focus:ring-emerald focus:border-emerald text-sm" placeholder="0 if none" />
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-charcoal mb-1" for="inputCarFuel">
+                  Car Fuel Type
+                </label>
+                <select id="inputCarFuel" class="w-full px-4 py-2.5 rounded-lg border border-softgray focus:ring-2 focus:ring-emerald focus:border-emerald text-sm">
+                  <option value="petrol">Petrol (0.170 kg/km)</option>
+                  <option value="diesel">Diesel (0.171 kg/km)</option>
+                  <option value="ev">Electric Vehicle (0.053 kg/km)</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-charcoal mb-1" for="inputMotorbikeKm">
+                Two-Wheeler / Scooter / Bike (Monthly km)
+              </label>
+              <input type="number" id="inputMotorbikeKm" min="0" max="5000" value="200" class="w-full px-4 py-2.5 rounded-lg border border-softgray focus:ring-2 focus:ring-emerald focus:border-emerald text-sm" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-semibold text-charcoal mb-1" for="inputBusKm">
+                  City Bus Travel (Monthly km)
+                </label>
+                <input type="number" id="inputBusKm" min="0" max="5000" value="120" class="w-full px-4 py-2.5 rounded-lg border border-softgray focus:ring-2 focus:ring-emerald focus:border-emerald text-sm" />
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-charcoal mb-1" for="inputMetroKm">
+                  Metro Rail / Train (Monthly km)
+                </label>
+                <input type="number" id="inputMetroKm" min="0" max="5000" value="150" class="w-full px-4 py-2.5 rounded-lg border border-softgray focus:ring-2 focus:ring-emerald focus:border-emerald text-sm" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div>
+                <label class="block text-sm font-semibold text-charcoal mb-1" for="inputFlightsShort">
+                  Domestic / Short Flights (per year)
+                </label>
+                <input type="number" id="inputFlightsShort" min="0" max="100" value="2" class="w-full px-4 py-2.5 rounded-lg border border-softgray focus:ring-2 focus:ring-emerald focus:border-emerald text-sm" />
+                <span class="text-[11px] text-charcoal/60">Approx. 150 kg CO₂e / flight segment</span>
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-charcoal mb-1" for="inputFlightsLong">
+                  International Flights (per year)
+                </label>
+                <input type="number" id="inputFlightsLong" min="0" max="50" value="0" class="w-full px-4 py-2.5 rounded-lg border border-softgray focus:ring-2 focus:ring-emerald focus:border-emerald text-sm" />
+                <span class="text-[11px] text-charcoal/60">Approx. 850 kg CO₂e / flight segment</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: FOOD & LIFESTYLE -->
+        <div id="calcStep3" class="calc-step-panel hidden space-y-6">
+          <div class="border-b border-softgray pb-4">
+            <h2 class="text-xl font-bold text-forest flex items-center space-x-2">
+              <i data-lucide="utensils" class="w-5 h-5 text-orange-500"></i>
+              <span>Step 3: Food &amp; Nutrition Habits</span>
+            </h2>
+            <p class="text-xs text-charcoal/70 mt-1">Grounding based on Poore &amp; Nemecek agricultural lifecycle study.</p>
+          </div>
+
+          <div class="space-y-5">
+            <div>
+              <label class="block text-sm font-semibold text-charcoal mb-2">
+                Primary Dietary Pattern
+              </label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label class="flex items-center p-3.5 border border-softgray rounded-xl cursor-pointer hover:border-emerald hover:bg-mint/20 transition">
+                  <input type="radio" name="dietRadio" value="heavy_meat" class="text-emerald focus:ring-emerald" />
+                  <div class="ml-3">
+                    <span class="text-sm font-bold text-forest">Heavy Meat Eater</span>
+                    <p class="text-[11px] text-charcoal/70">Meat almost daily (~3.3 t CO₂e/yr)</p>
+                  </div>
+                </label>
+
+                <label class="flex items-center p-3.5 border border-softgray rounded-xl cursor-pointer hover:border-emerald hover:bg-mint/20 transition">
+                  <input type="radio" name="dietRadio" value="medium_meat" class="text-emerald focus:ring-emerald" />
+                  <div class="ml-3">
+                    <span class="text-sm font-bold text-forest">Medium Meat Eater</span>
+                    <p class="text-[11px] text-charcoal/70">Meat 2–4 times/week (~2.5 t CO₂e/yr)</p>
+                  </div>
+                </label>
+
+                <label class="flex items-center p-3.5 border border-softgray rounded-xl cursor-pointer hover:border-emerald hover:bg-mint/20 transition">
+                  <input type="radio" name="dietRadio" value="pescatarian" class="text-emerald focus:ring-emerald" />
+                  <div class="ml-3">
+                    <span class="text-sm font-bold text-forest">Pescatarian</span>
+                    <p class="text-[11px] text-charcoal/70">Fish &amp; seafood, no meat (~1.9 t CO₂e/yr)</p>
+                  </div>
+                </label>
+
+                <label class="flex items-center p-3.5 border border-emerald bg-mint/30 rounded-xl cursor-pointer transition">
+                  <input type="radio" name="dietRadio" value="vegetarian" checked class="text-emerald focus:ring-emerald" />
+                  <div class="ml-3">
+                    <span class="text-sm font-bold text-forest">Vegetarian</span>
+                    <p class="text-[11px] text-charcoal/70">Dairy, grains, vegetables (~1.7 t CO₂e/yr)</p>
+                  </div>
+                </label>
+
+                <label class="flex items-center p-3.5 border border-softgray rounded-xl cursor-pointer hover:border-emerald hover:bg-mint/20 transition sm:col-span-2">
+                  <input type="radio" name="dietRadio" value="vegan" class="text-emerald focus:ring-emerald" />
+                  <div class="ml-3">
+                    <span class="text-sm font-bold text-forest">Strictly Plant-Based (Vegan)</span>
+                    <p class="text-[11px] text-charcoal/70">100% plant foods, zero dairy/animal products (~1.5 t CO₂e/yr)</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-charcoal mb-1" for="inputFoodWaste">
+                Estimated Food Waste in Household
+              </label>
+              <select id="inputFoodWaste" class="w-full px-4 py-2.5 rounded-lg border border-softgray focus:ring-2 focus:ring-emerald focus:border-emerald text-sm">
+                <option value="low">Very Low (Eat leftovers, carefully planned meals)</option>
+                <option value="average" selected>Average (Occasional spoiled produce or leftovers thrown out)</option>
+                <option value="high">High (Frequent takeout/surplus leftovers discarded)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: WASTE & CONSUMPTION -->
+        <div id="calcStep4" class="calc-step-panel hidden space-y-6">
+          <div class="border-b border-softgray pb-4">
+            <h2 class="text-xl font-bold text-forest flex items-center space-x-2">
+              <i data-lucide="trash-2" class="w-5 h-5 text-teal-600"></i>
+              <span>Step 4: Waste &amp; Consumption</span>
+            </h2>
+            <p class="text-xs text-charcoal/70 mt-1">Landfill methane models and packaging lifecycle impact.</p>
+          </div>
+
+          <div class="space-y-5">
+            <div>
+              <label class="block text-sm font-semibold text-charcoal mb-1" for="inputWasteVolume">
+                Household Waste Generation Level
+              </label>
+              <select id="inputWasteVolume" class="w-full px-4 py-2.5 rounded-lg border border-softgray focus:ring-2 focus:ring-emerald focus:border-emerald text-sm">
+                <option value="low">Low (Minimal packaging, reusable bags)</option>
+                <option value="average" selected>Average (Standard 1–2 trash bags per week)</option>
+                <option value="high">High (High packaging, frequent online shopping boxes)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-charcoal mb-1" for="inputRecyclePercent">
+                Recycling &amp; Segregation Rate
+              </label>
+              <div class="flex items-center space-x-4">
+                <input type="range" id="inputRecyclePercent" min="0" max="100" value="40" class="w-full slider-accent" oninput="document.getElementById('recycleVal').innerText = this.value + '%'" />
+                <span id="recycleVal" class="text-sm font-bold text-forest w-14 text-right">40%</span>
+              </div>
+              <p class="text-[11px] text-charcoal/60 mt-1">Do you segregate dry paper, plastics, and metals?</p>
+            </div>
+
+            <div class="p-3 bg-offwhite rounded-xl border border-softgray flex items-center justify-between">
+              <div>
+                <span class="text-xs font-bold text-forest">Organic Waste Composting</span>
+                <p class="text-[11px] text-charcoal/70">Do you compost kitchen wet waste or use municipal compost?</p>
+              </div>
+              <input type="checkbox" id="inputCompost" class="w-5 h-5 text-emerald rounded border-softgray focus:ring-emerald slider-accent" />
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-charcoal mb-1" for="inputPlasticHabit">
+                Single-Use Plastic Consumption
+              </label>
+              <select id="inputPlasticHabit" class="w-full px-4 py-2.5 rounded-lg border border-softgray focus:ring-2 focus:ring-emerald focus:border-emerald text-sm">
+                <option value="rare">Rarely (Carry cloth bags, refillable bottles)</option>
+                <option value="moderate" selected>Moderate (Occasional plastic bottles/grocery bags)</option>
+                <option value="heavy">Frequent (Regular disposable cutlery, delivery packaging)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 5: REVIEW & VERIFICATION -->
+        <div id="calcStep5" class="calc-step-panel hidden space-y-6">
+          <div class="border-b border-softgray pb-4">
+            <h2 class="text-xl font-bold text-forest flex items-center space-x-2">
+              <i data-lucide="check-circle" class="w-5 h-5 text-emerald"></i>
+              <span>Step 5: Review Answers Before Calculation</span>
+            </h2>
+            <p class="text-xs text-charcoal/70 mt-1">Confirm your inputs below. You can jump back to any step to make edits.</p>
+          </div>
+
+          <div class="space-y-4" id="reviewSummaryContainer">
+            <!-- Dynamically populated review content -->
+          </div>
+        </div>
+
+        <!-- CALCULATOR NAVIGATION CONTROLS -->
+        <div class="mt-8 pt-6 border-t border-softgray flex items-center justify-between">
+          <button id="btnPrevStep" onclick="goToPrevStep()" class="hidden px-5 py-2.5 rounded-xl border border-softgray text-charcoal hover:bg-softgray font-semibold text-sm transition items-center space-x-2">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            <span>Previous Step</span>
+          </button>
+          
+          <div class="ml-auto flex items-center space-x-3">
+            <button id="btnNextStep" onclick="goToNextStep()" class="bg-forest hover:bg-forest/90 text-mint px-6 py-2.5 rounded-xl font-bold text-sm transition flex items-center space-x-2 shadow-sm">
+              <span>Continue</span>
+              <i data-lucide="arrow-right" class="w-4 h-4 text-emerald"></i>
+            </button>
+
+            <button id="btnCalculateFinal" onclick="executeCalculation()" class="hidden bg-emerald hover:bg-emerald/90 text-white px-8 py-3 rounded-xl font-bold text-sm transition flex items-center space-x-2 shadow-md hover:shadow-lg">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              <span>Calculate My Footprint</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 3: PERSONALIZED RESULTS DASHBOARD                   -->
+    <!-- ======================================================== -->
+    <section id="view-dashboard" class="view-panel hidden py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-10">
+      
+      <!-- Dashboard Top Banner -->
+      <div class="glass-card rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between border border-softgray">
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="text-xs uppercase font-extrabold tracking-widest text-emerald bg-mint px-3 py-0.5 rounded-full">Results Generated</span>
+            <span id="dashDate" class="text-xs text-charcoal/60"></span>
+          </div>
+          <h1 class="text-3xl font-extrabold text-forest mt-2">Your Carbon Footprint Breakdown</h1>
+          <p class="text-sm text-charcoal/70 mt-1">Calculated using verified CEA India and IPCC/DEFRA conversion factors.</p>
+        </div>
+
+        <div class="mt-6 md:mt-0 flex flex-wrap gap-3">
+          <button onclick="showView('calculator')" class="border border-softgray bg-white text-forest hover:bg-softgray px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center space-x-2">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            <span>Recalculate</span>
+          </button>
+          <button onclick="saveCurrentRunToHistory()" class="border border-emerald text-emerald hover:bg-mint px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center space-x-2">
+            <i data-lucide="bookmark" class="w-4 h-4"></i>
+            <span>Save Result</span>
+          </button>
+          <button onclick="triggerPrintReport()" class="bg-forest hover:bg-forest/90 text-mint px-5 py-2 rounded-xl text-sm font-bold transition flex items-center space-x-2 shadow-sm">
+            <i data-lucide="download" class="w-4 h-4 text-emerald"></i>
+            <span>Download PDF Report</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- KEY SCORECARD TILES -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <!-- Tile 1: Annual Total -->
+        <div class="bg-forest text-white p-6 rounded-2xl shadow-md relative overflow-hidden">
+          <div class="absolute right-0 top-0 opacity-10 translate-x-4 -translate-y-4">
+            <i data-lucide="globe" class="w-32 h-32"></i>
+          </div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-mint">Annualized Total Footprint</p>
+          <h2 id="cardTotalTonnes" class="text-4xl font-extrabold text-white mt-2">-- t</h2>
+          <p class="text-xs text-mint/80 mt-1">Tonnes CO₂-equivalent / year</p>
+          <div class="mt-4 pt-3 border-t border-white/20 text-xs flex justify-between">
+            <span class="text-white/70">Monthly Run-Rate:</span>
+            <span id="cardMonthlyKg" class="font-bold text-mint">-- kg</span>
+          </div>
+        </div>
+
+        <!-- Tile 2: India Comparison -->
+        <div class="bg-white p-6 rounded-2xl border border-softgray shadow-sm">
+          <p class="text-xs font-bold uppercase tracking-wider text-charcoal/60">Vs. India Benchmark</p>
+          <h2 id="cardIndiaDiff" class="text-3xl font-extrabold text-forest mt-2">--%</h2>
+          <p class="text-xs text-charcoal/70 mt-1">Compared to India Avg (1.9 t/yr)</p>
+          <div class="mt-4 pt-3 border-t border-softgray text-xs flex items-center space-x-1.5" id="indiaBadge">
+            <i data-lucide="info" class="w-3.5 h-3.5 text-emerald"></i>
+            <span>National baseline comparison</span>
+          </div>
+        </div>
+
+        <!-- Tile 3: Global Comparison -->
+        <div class="bg-white p-6 rounded-2xl border border-softgray shadow-sm">
+          <p class="text-xs font-bold uppercase tracking-wider text-charcoal/60">Vs. Global Average</p>
+          <h2 id="cardGlobalDiff" class="text-3xl font-extrabold text-forest mt-2">--%</h2>
+          <p class="text-xs text-charcoal/70 mt-1">Global per-capita baseline (4.7 t/yr)</p>
+          <div class="mt-4 pt-3 border-t border-softgray text-xs text-charcoal/60">
+            <span>Global standard benchmark</span>
+          </div>
+        </div>
+
+        <!-- Tile 4: Paris Climate Target -->
+        <div class="bg-white p-6 rounded-2xl border border-softgray shadow-sm">
+          <p class="text-xs font-bold uppercase tracking-wider text-charcoal/60">Paris 2030 Target</p>
+          <h2 id="cardParisGoal" class="text-3xl font-extrabold text-emerald mt-2">2.00 t</h2>
+          <p class="text-xs text-charcoal/70 mt-1">Target to limit warming to 1.5°C</p>
+          <div class="mt-4 pt-3 border-t border-softgray text-xs" id="parisStatusText">
+            <span>Target threshold reference</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- VISUAL CHARTS & BREAKDOWN CARDS -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: SVG Donut Chart + Visual Breakdown -->
+        <div class="lg:col-span-5 bg-white p-6 sm:p-8 rounded-2xl border border-softgray shadow-sm space-y-6">
+          <div class="flex items-center justify-between border-b border-softgray pb-4">
+            <h3 class="font-bold text-forest text-lg">Category Contribution</h3>
+            <span class="text-xs text-charcoal/50">Proportional Share</span>
+          </div>
+
+          <!-- Pure Responsive SVG Donut Chart -->
+          <div class="flex flex-col items-center justify-center py-4">
+            <div class="relative w-48 h-48">
+              <svg viewBox="0 0 36 36" class="w-full h-full -rotate-90">
+                <circle cx="18" cy="18" r="15.915" fill="transparent" stroke="#E8EDE8" stroke-width="4"></circle>
+                <circle id="donutEnergy" cx="18" cy="18" r="15.915" fill="transparent" stroke="#12372A" stroke-width="4" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
+                <circle id="donutTransport" cx="18" cy="18" r="15.915" fill="transparent" stroke="#16A36A" stroke-width="4" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
+                <circle id="donutFood" cx="18" cy="18" r="15.915" fill="transparent" stroke="#EA580C" stroke-width="4" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
+                <circle id="donutWaste" cx="18" cy="18" r="15.915" fill="transparent" stroke="#0D9488" stroke-width="4" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                <span id="donutCenterVal" class="text-xl font-extrabold text-forest">--</span>
+                <span class="text-[10px] text-charcoal/60 uppercase font-semibold">t CO₂e/yr</span>
+              </div>
+            </div>
+
+            <!-- Donut Legend -->
+            <div class="mt-6 grid grid-cols-2 gap-x-6 gap-y-2 text-xs">
+              <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-sm bg-forest"></span>
+                <span class="text-charcoal/80">Energy: <strong id="pctEnergy">--%</strong></span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-sm bg-emerald"></span>
+                <span class="text-charcoal/80">Transport: <strong id="pctTransport">--%</strong></span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-sm bg-orange-600"></span>
+                <span class="text-charcoal/80">Food: <strong id="pctFood">--%</strong></span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-sm bg-teal-600"></span>
+                <span class="text-charcoal/80">Waste: <strong id="pctWaste">--%</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-softgray flex justify-center">
+            <button onclick="showView('simulator')" class="w-full bg-mint text-forest hover:bg-emerald hover:text-white font-bold py-2.5 rounded-xl transition text-sm flex items-center justify-center space-x-2">
+              <i data-lucide="sliders" class="w-4 h-4"></i>
+              <span>Simulate Reduction Changes</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Category Deep Dive Cards -->
+        <div class="lg:col-span-7 space-y-4">
+          
+          <!-- Category 1: Energy -->
+          <div class="bg-white p-5 rounded-2xl border border-softgray shadow-sm flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-xl bg-forest/10 text-forest flex items-center justify-center font-bold">
+                <i data-lucide="zap" class="w-6 h-6 text-forest"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-forest">Home Energy &amp; Electricity</h4>
+                <p id="subEnergyDesc" class="text-xs text-charcoal/60 mt-0.5">Electricity grid usage &amp; cooking fuel</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p id="valEnergyKg" class="text-lg font-extrabold text-forest">-- kg</p>
+              <span id="valEnergyTonnes" class="text-xs text-charcoal/60">-- t / yr</span>
+            </div>
+          </div>
+
+          <!-- Category 2: Transport -->
+          <div class="bg-white p-5 rounded-2xl border border-softgray shadow-sm flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-xl bg-emerald/10 text-emerald flex items-center justify-center font-bold">
+                <i data-lucide="car" class="w-6 h-6 text-emerald"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-forest">Transportation &amp; Travel</h4>
+                <p id="subTransportDesc" class="text-xs text-charcoal/60 mt-0.5">Vehicle road travel and flight emissions</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p id="valTransportKg" class="text-lg font-extrabold text-forest">-- kg</p>
+              <span id="valTransportTonnes" class="text-xs text-charcoal/60">-- t / yr</span>
+            </div>
+          </div>
+
+          <!-- Category 3: Food -->
+          <div class="bg-white p-5 rounded-2xl border border-softgray shadow-sm flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center font-bold">
+                <i data-lucide="utensils" class="w-6 h-6 text-orange-600"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-forest">Food &amp; Nutrition</h4>
+                <p id="subFoodDesc" class="text-xs text-charcoal/60 mt-0.5">Dietary footprint and food waste</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p id="valFoodKg" class="text-lg font-extrabold text-forest">-- kg</p>
+              <span id="valFoodTonnes" class="text-xs text-charcoal/60">-- t / yr</span>
+            </div>
+          </div>
+
+          <!-- Category 4: Waste -->
+          <div class="bg-white p-5 rounded-2xl border border-softgray shadow-sm flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold">
+                <i data-lucide="trash-2" class="w-6 h-6 text-teal-600"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-forest">Waste &amp; Consumption</h4>
+                <p id="subWasteDesc" class="text-xs text-charcoal/60 mt-0.5">Municipal landfill disposal &amp; recycling</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p id="valWasteKg" class="text-lg font-extrabold text-forest">-- kg</p>
+              <span id="valWasteTonnes" class="text-xs text-charcoal/60">-- t / yr</span>
+            </div>
+          </div>
+
+          <!-- Comparative Benchmark Bar Chart -->
+          <div class="bg-white p-6 rounded-2xl border border-softgray shadow-sm space-y-4">
+            <h4 class="font-bold text-forest text-sm">Benchmark Context (Annual Tonnes CO₂e)</h4>
+            <div class="space-y-3 pt-2 text-xs">
+              <div>
+                <div class="flex justify-between font-semibold mb-1">
+                  <span>Your Footprint</span>
+                  <span id="barLabelUser" class="text-emerald font-bold">-- t</span>
+                </div>
+                <div class="w-full bg-softgray rounded-full h-3">
+                  <div id="barUser" class="bg-emerald h-3 rounded-full" style="width: 40%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-charcoal/70 mb-1">
+                  <span>India National Average</span>
+                  <span>1.90 t</span>
+                </div>
+                <div class="w-full bg-softgray rounded-full h-2">
+                  <div class="bg-forest/60 h-2 rounded-full" style="width: 25%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-charcoal/70 mb-1">
+                  <span>Paris Agreement 2030 Target</span>
+                  <span class="text-teal-600 font-semibold">2.00 t</span>
+                </div>
+                <div class="w-full bg-softgray rounded-full h-2">
+                  <div class="bg-teal-500 h-2 rounded-full" style="width: 27%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-charcoal/70 mb-1">
+                  <span>Global Average per Capita</span>
+                  <span>4.70 t</span>
+                </div>
+                <div class="w-full bg-softgray rounded-full h-2">
+                  <div class="bg-charcoal/40 h-2 rounded-full" style="width: 62%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- PERSONALIZED ACTION PLAN -->
+      <div class="bg-white rounded-2xl border border-softgray p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-softgray pb-4">
+          <div>
+            <h3 class="text-xl font-extrabold text-forest">Personalized Action Roadmap</h3>
+            <p class="text-xs text-charcoal/70 mt-1">Recommendations prioritized specifically by your largest calculated emission sources.</p>
+          </div>
+          <div class="mt-3 sm:mt-0 text-xs font-semibold px-3 py-1 bg-mint text-emerald rounded-full">
+            <span id="actionPlanCount">4 Prioritized Interventions</span>
+          </div>
+        </div>
+
+        <div id="actionPlanList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Dynamically populated actions -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 4: WHAT-IF EMISSION SIMULATOR                       -->
+    <!-- ======================================================== -->
+    <section id="view-simulator" class="view-panel hidden py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-10">
+      
+      <div class="text-center max-w-3xl mx-auto">
+        <span class="text-xs uppercase font-extrabold tracking-widest text-emerald bg-mint px-3 py-1 rounded-full">Scenario Modeling</span>
+        <h1 class="text-3xl font-extrabold text-forest mt-2">What-If Emission Simulator</h1>
+        <p class="text-sm text-charcoal/70 mt-1">
+          Adjust the sliders below to see in real-time how individual lifestyle shifts avoid carbon emissions.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Controls Column -->
+        <div class="lg:col-span-7 bg-white p-6 sm:p-8 rounded-2xl border border-softgray shadow-sm space-y-6">
+          <h3 class="font-bold text-forest text-lg border-b border-softgray pb-3">Simulate Lifestyle Interventions</h3>
+
+          <!-- Simulation 1: Electricity reduction -->
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm font-semibold">
+              <label for="simPowerCut" class="flex items-center space-x-2">
+                <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i>
+                <span>Reduce Home Electricity Usage</span>
+              </label>
+              <span id="simPowerCutVal" class="text-emerald font-bold">0%</span>
+            </div>
+            <input type="range" id="simPowerCut" min="0" max="50" step="5" value="0" class="w-full slider-accent" oninput="runLiveSimulation()" />
+            <p class="text-[11px] text-charcoal/60">Turn off standby appliances, upgrade to 5-star BEE inverters, set AC to 25°C.</p>
+          </div>
+
+          <!-- Simulation 2: Transit Shift -->
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm font-semibold">
+              <label for="simTransitDays" class="flex items-center space-x-2">
+                <i data-lucide="bus" class="w-4 h-4 text-emerald"></i>
+                <span>Shift Car Commute to Metro/Bus (Days/Week)</span>
+              </label>
+              <span id="simTransitDaysVal" class="text-emerald font-bold">0 days</span>
+            </div>
+            <input type="range" id="simTransitDays" min="0" max="6" step="1" value="0" class="w-full slider-accent" oninput="runLiveSimulation()" />
+            <p class="text-[11px] text-charcoal/60">Taking the metro or bus avoids approx. 0.13 kg CO₂e per km compared to solo driving.</p>
+          </div>
+
+          <!-- Simulation 3: Plant-Based Meal Shift -->
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm font-semibold">
+              <label for="simPlantMeals" class="flex items-center space-x-2">
+                <i data-lucide="utensils" class="w-4 h-4 text-orange-500"></i>
+                <span>Adopt Plant-Based / Vegetarian Meals (Meals/Week)</span>
+              </label>
+              <span id="simPlantMealsVal" class="text-emerald font-bold">0 meals</span>
+            </div>
+            <input type="range" id="simPlantMeals" min="0" max="14" step="1" value="0" class="w-full slider-accent" oninput="runLiveSimulation()" />
+            <p class="text-[11px] text-charcoal/60">Replacing meat meals with plant proteins significantly reduces methane and feed emissions.</p>
+          </div>
+
+          <!-- Simulation 4: Waste Segregation & Plastic Reduction -->
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm font-semibold">
+              <label for="simRecycleBoost" class="flex items-center space-x-2">
+                <i data-lucide="trash-2" class="w-4 h-4 text-teal-600"></i>
+                <span>Increase Recycling &amp; Eliminate Single-Use Plastic</span>
+              </label>
+              <span id="simRecycleBoostVal" class="text-emerald font-bold">Baseline</span>
+            </div>
+            <input type="range" id="simRecycleBoost" min="0" max="2" step="1" value="0" class="w-full slider-accent" oninput="runLiveSimulation()" />
+            <div class="flex justify-between text-[10px] text-charcoal/50">
+              <span>Current</span>
+              <span>75% Recycling + Composting</span>
+              <span>Zero-Waste Lifestyle</span>
+            </div>
+          </div>
+
+          <!-- Reset Simulator -->
+          <div class="pt-4 border-t border-softgray flex justify-end">
+            <button onclick="resetSimulator()" class="text-xs text-charcoal/60 hover:text-emerald font-semibold flex items-center space-x-1">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+              <span>Reset Simulator to Baseline</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Simulation Results Display -->
+        <div class="lg:col-span-5 bg-forest text-white p-6 sm:p-8 rounded-2xl shadow-xl space-y-6">
+          <div class="border-b border-white/20 pb-4">
+            <span class="text-xs uppercase font-extrabold tracking-widest text-mint bg-emerald/40 px-2.5 py-0.5 rounded">Impact Projection</span>
+            <h3 class="text-2xl font-extrabold text-white mt-2">Simulation Impact</h3>
+            <p class="text-xs text-white/70 mt-1">Calculated using identical verified scientific conversion coefficients.</p>
+          </div>
+
+          <div class="space-y-4">
+            <div class="flex justify-between items-center py-2 border-b border-white/10">
+              <span class="text-sm text-white/80">Current Footprint:</span>
+              <span id="simCurrentFootprint" class="text-lg font-bold text-white">-- t / yr</span>
+            </div>
+
+            <div class="flex justify-between items-center py-2 border-b border-white/10">
+              <span class="text-sm text-mint font-semibold">Adjusted Footprint:</span>
+              <span id="simAdjustedFootprint" class="text-2xl font-extrabold text-mint">-- t / yr</span>
+            </div>
+
+            <div class="flex justify-between items-center py-2 border-b border-white/10">
+              <span class="text-sm text-emerald font-semibold">Avoided Emissions:</span>
+              <span id="simAvoidedAmount" class="text-xl font-extrabold text-emerald">- 0 kg CO₂e</span>
+            </div>
+
+            <div class="flex justify-between items-center py-2 border-b border-white/10">
+              <span class="text-sm text-white/80">Percentage Reduction:</span>
+              <span id="simPercentCut" class="text-lg font-bold text-emerald">0.0%</span>
+            </div>
+          </div>
+
+          <div class="bg-white/10 p-4 rounded-xl text-xs text-mint/90 leading-relaxed border border-white/10">
+            <p><strong>Note on Methodology:</strong> Simulations represent mathematical projections based on your stated activity reductions and cannot guarantee absolute environmental outcomes.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 5: ORCHIDS ECO CHALLENGES                           -->
+    <!-- ======================================================== -->
+    <section id="view-challenges" class="view-panel hidden py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-10">
+      
+      <div class="text-center max-w-3xl mx-auto">
+        <span class="text-xs uppercase font-extrabold tracking-widest text-emerald bg-mint px-3 py-1 rounded-full">Community Engagement</span>
+        <h1 class="text-3xl font-extrabold text-forest mt-2">ORCHIDS Eco Challenges</h1>
+        <p class="text-sm text-charcoal/70 mt-1">
+          Complete verified micro-challenges to build lasting environmental habits and unlock sustainability badges.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="challengesContainer">
+        <!-- Rendered via JavaScript with localStorage status -->
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 6: METHODOLOGY & TRANSPARENCY                       -->
+    <!-- ======================================================== -->
+    <section id="view-methodology" class="view-panel hidden py-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-10">
+      
+      <div class="text-center max-w-3xl mx-auto">
+        <span class="text-xs uppercase font-extrabold tracking-widest text-emerald bg-mint px-3 py-1 rounded-full">Scientific Rigor</span>
+        <h1 class="text-3xl font-extrabold text-forest mt-2">Calculation Methodology &amp; Sources</h1>
+        <p class="text-sm text-charcoal/70 mt-1">
+          Complete scientific documentation, coefficient citations, and boundary conditions used by ORCHIDS.
+        </p>
+      </div>
+
+      <div class="bg-white p-6 sm:p-10 rounded-2xl border border-softgray shadow-sm space-y-8 text-sm leading-relaxed text-charcoal/80">
+        
+        <div>
+          <h2 class="text-xl font-bold text-forest mb-2">1. Governing Calculation Principles</h2>
+          <p>
+            ORCHIDS calculates greenhouse gas emissions using the IPCC (Intergovernmental Panel on Climate Change) activity-based inventory methodology. The mathematical relationship governing every category is:
+          </p>
+          <div class="my-3 p-4 bg-offwhite rounded-xl border border-softgray font-mono text-xs text-forest">
+            Emission (kg CO₂e) = Activity Metric (kWh, km, meals, kg) × Validated Emission Factor (kg CO₂e/unit)
+          </div>
+          <p>
+            For household energy and cooking fuels, shared consumption is distributed across residents using per-capita allocation:
+          </p>
+          <div class="my-3 p-4 bg-offwhite rounded-xl border border-softgray font-mono text-xs text-forest">
+            Individual Monthly Energy (kg CO₂e) = Total Household Energy Emissions / Household Size
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-bold text-forest mb-3">2. Detailed Emission Factor Directory</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border border-softgray rounded-lg">
+              <thead class="bg-offwhite text-forest font-bold uppercase tracking-wider">
+                <tr>
+                  <th class="p-3 border-b border-softgray">Sector</th>
+                  <th class="p-3 border-b border-softgray">Coefficient</th>
+                  <th class="p-3 border-b border-softgray">Reference &amp; Year</th>
+                  <th class="p-3 border-b border-softgray">Geographic Scope</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-softgray">
+                <tr>
+                  <td class="p-3 font-semibold text-forest">Grid Electricity</td>
+                  <td class="p-3">0.716 kg CO₂e / kWh</td>
+                  <td class="p-3">Central Electricity Authority (CEA) Baseline v19 (2024)</td>
+                  <td class="p-3">India National Grid Weighted Average</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold text-forest">Domestic LPG</td>
+                  <td class="p-3">2.983 kg CO₂e / kg LPG (~42.36 kg / cylinder)</td>
+                  <td class="p-3">IPCC 2006 Guidelines &amp; UK DEFRA (2023)</td>
+                  <td class="p-3">Standard 14.2 kg domestic LPG cylinder</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold text-forest">Piped Gas (PNG)</td>
+                  <td class="p-3">2.030 kg CO₂e / m³</td>
+                  <td class="p-3">MoPNG India / IPCC</td>
+                  <td class="p-3">Domestic piped methane</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold text-forest">Petrol Car</td>
+                  <td class="p-3">0.170 kg CO₂e / km</td>
+                  <td class="p-3">ARAI India / UK DEFRA (2023)</td>
+                  <td class="p-3">Average compact petrol passenger car</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold text-forest">Diesel Car</td>
+                  <td class="p-3">0.171 kg CO₂e / km</td>
+                  <td class="p-3">ARAI India / UK DEFRA (2023)</td>
+                  <td class="p-3">Average diesel passenger vehicle</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold text-forest">Electric Vehicle</td>
+                  <td class="p-3">0.053 kg CO₂e / km</td>
+                  <td class="p-3">Grid intensity × 0.15 kWh/km vehicle efficiency</td>
+                  <td class="p-3">Indian grid charging scenario</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold text-forest">Urban Bus</td>
+                  <td class="p-3">0.040 kg CO₂e / p-km</td>
+                  <td class="p-3">ASRTU India transit studies</td>
+                  <td class="p-3">Municipal diesel/CNG bus at 40 passengers</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold text-forest">Metro Rail</td>
+                  <td class="p-3">0.018 kg CO₂e / p-km</td>
+                  <td class="p-3">Delhi Metro Rail Corporation (DMRC)</td>
+                  <td class="p-3">Urban electric rail rapid transit</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold text-forest">Aviation</td>
+                  <td class="p-3">0.158 – 0.195 kg CO₂e / p-km</td>
+                  <td class="p-3">ICAO / DEFRA with 1.9x Radiative Forcing Index</td>
+                  <td class="p-3">Short-haul (<1000 km) &amp; Long-haul flights</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold text-forest">Diet Profiles</td>
+                  <td class="p-3">125 – 275 kg CO₂e / month</td>
+                  <td class="p-3">Poore &amp; Nemecek (Science 2018) meta-analysis</td>
+                  <td class="p-3">Global agricultural lifecycle assessment</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold text-forest">Landfill Waste</td>
+                  <td class="p-3">0.570 kg CO₂e / kg waste</td>
+                  <td class="p-3">IPCC Waste Methane First-Order Decay Model</td>
+                  <td class="p-3">Municipal unsegregated solid landfill</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-bold text-forest mb-2">3. Important Assumptions &amp; Scientific Limitations</h2>
+          <ul class="list-disc pl-5 space-y-2">
+            <li><strong>Model Scope:</strong> ORCHIDS covers personal Scope 1 (direct vehicle combustion) and Scope 2 (purchased home electricity) emissions, alongside primary Scope 3 lifecycle activities (food consumption, waste, commercial air travel).</li>
+            <li><strong>Approximations:</strong> User inputs rely on user memory and approximations rather than utility-grade submetering. Results are indicative estimates for lifestyle awareness rather than legal GHG regulatory filings.</li>
+            <li><strong>Embodied Emissions:</strong> Embodied emissions in durable consumer electronics, heavy furniture, and housing construction are excluded to avoid double-counting and maintain user survey accessibility.</li>
+          </ul>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 7: ABOUT ORCHIDS & DEVELOPER PROFILE                -->
+    <!-- ======================================================== -->
+    <section id="view-about" class="view-panel hidden py-12 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-10">
+      
+      <div class="text-center max-w-2xl mx-auto">
+        <span class="text-xs uppercase font-extrabold tracking-widest text-emerald bg-mint px-3 py-1 rounded-full">Platform Origin</span>
+        <h1 class="text-3xl font-extrabold text-forest mt-2">About ORCHIDS</h1>
+        <p class="text-sm text-charcoal/70 mt-1">Making carbon footprint awareness simple, accessible, and actionable.</p>
+      </div>
+
+      <div class="bg-white p-8 sm:p-12 rounded-2xl border border-softgray shadow-sm space-y-8">
+        
+        <div>
+          <h2 class="text-xl font-bold text-forest mb-3">Our Mission</h2>
+          <p class="text-charcoal/80 text-base leading-relaxed">
+            ORCHIDS is a sustainability-focused digital platform designed to help people understand the environmental impact of everyday activities. By transforming lifestyle information into understandable carbon footprint estimates, ORCHIDS encourages informed decisions, practical emission-reduction strategies, and continuous environmental awareness.
+          </p>
+        </div>
+
+        <div class="pt-6 border-t border-softgray">
+          <div class="inline-flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-emerald mb-2">
+            <i data-lucide="user" class="w-4 h-4"></i>
+            <span>Development Team</span>
+          </div>
+          <h2 class="text-2xl font-extrabold text-forest">Created by Team Triple Impact</h2>
+          <p class="text-sm font-semibold text-emerald mt-1">Lead Developer: Shashank Shekhar Tiwari</p>
+          <p class="text-charcoal/80 text-base leading-relaxed mt-3">
+            ORCHIDS reflects an interest in technology, sustainability, and building digital tools that help people make more informed environmental choices.
+          </p>
+        </div>
+
+        <div class="pt-6 border-t border-softgray grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div class="p-4 bg-offwhite rounded-xl border border-softgray">
+            <h4 class="font-bold text-forest text-sm">Transparency First</h4>
+            <p class="text-xs text-charcoal/70 mt-1">Every calculation is derived from documented, credible scientific coefficients rather than fabricated figures.</p>
+          </div>
+          <div class="p-4 bg-offwhite rounded-xl border border-softgray">
+            <h4 class="font-bold text-forest text-sm">Action-Oriented</h4>
+            <p class="text-xs text-charcoal/70 mt-1">Beyond providing raw numbers, ORCHIDS delivers personalized reduction roadmaps and micro-challenges.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 8: PRINTABLE PDF REPORT SECTION                     -->
+    <!-- ======================================================== -->
+    <div id="printReportSection" class="hidden">
+      <div class="max-w-4xl mx-auto p-8 border border-gray-300 rounded-lg">
+        <div class="flex justify-between items-center border-b-2 border-forest pb-4 mb-6">
+          <div>
+            <h1 class="text-3xl font-extrabold text-forest">ORCHIDS</h1>
+            <p class="text-xs text-gray-600">Smart Carbon Footprint Assessment Report</p>
+          </div>
+          <div class="text-right text-xs text-gray-600">
+            <p><strong>Date:</strong> <span id="pdfDate">--</span></p>
+            <p><strong>Developer:</strong> Team Triple Impact</p>
+            <p><strong>Lead Developer:</strong> Shashank Shekhar Tiwari</p>
+            <p class="text-emerald font-semibold">Small Changes. Measurable Impact.</p>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <h2 class="text-lg font-bold text-forest mb-2">Executive Summary</h2>
+          <div class="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded border border-gray-200">
+            <div>
+              <p class="text-xs text-gray-500 uppercase">Estimated Total Annual Footprint</p>
+              <p id="pdfTotalTonnes" class="text-2xl font-bold text-forest">-- t CO₂e / yr</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-500 uppercase">Estimated Monthly Emission</p>
+              <p id="pdfMonthlyKg" class="text-2xl font-bold text-emerald">-- kg CO₂e / mo</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <h2 class="text-lg font-bold text-forest mb-2">Category-Wise Breakdown</h2>
+          <table class="w-full text-left text-xs border border-gray-300">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="p-2 border-b">Category</th>
+                <th class="p-2 border-b">Monthly Emission</th>
+                <th class="p-2 border-b">Annual Equivalent</th>
+                <th class="p-2 border-b">Share of Total</th>
+              </tr>
+            </thead>
+            <tbody id="pdfTableBody" class="divide-y divide-gray-200">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mb-6">
+          <h2 class="text-lg font-bold text-forest mb-2">Benchmark Comparison</h2>
+          <ul class="text-xs space-y-1 text-gray-700 list-disc pl-5" id="pdfBenchmarkList">
+            <!-- Dynamically populated -->
+          </ul>
+        </div>
+
+        <div class="mb-6">
+          <h2 class="text-lg font-bold text-forest mb-2">Personalized Recommendations</h2>
+          <div id="pdfRecommendationsList" class="space-y-2 text-xs">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <div class="pt-6 border-t border-gray-300 text-[10px] text-gray-500 space-y-1">
+          <p><strong>Methodology &amp; Verification:</strong> Calculations grounded in Central Electricity Authority (India Grid Baseline v19), UK DEFRA 2023, and IPCC AR6 Guidelines. Results represent per-capita lifestyle estimates.</p>
+          <p>Report compiled automatically by ORCHIDS. Designed &amp; Developed by Team Triple Impact. Lead Developer: Shashank Shekhar Tiwari.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ================= PROFESSIONAL FOOTER ================= -->
+  <footer class="bg-forest text-mint pt-16 pb-12 border-t border-emerald/20 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-white/10">
+        
+        <div class="md:col-span-5 space-y-4">
+          <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 rounded-lg bg-emerald flex items-center justify-center text-white">
+              <i data-lucide="sprout" class="w-5 h-5"></i>
+            </div>
+            <span class="text-2xl font-extrabold tracking-tight text-white">ORCHIDS</span>
+          </div>
+          <p class="text-xs text-white/70 max-w-sm leading-relaxed">
+            Smart Carbon Footprint Calculator &amp; Sustainability Platform. Helping individuals understand, calculate, analyze, and reduce their environmental impact with scientific precision.
+          </p>
+          <div class="text-xs font-semibold text-mint pt-2">
+            “Small Changes. Measurable Impact.”
+          </div>
+        </div>
+
+        <div class="md:col-span-3 space-y-3">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-emerald">Navigation</h4>
+          <ul class="text-xs space-y-2 text-white/70">
+            <li><button onclick="showView('home')" class="hover:text-white transition">Home</button></li>
+            <li><button onclick="showView('calculator')" class="hover:text-white transition">Footprint Calculator</button></li>
+            <li><button onclick="showView('dashboard')" class="hover:text-white transition">Results Dashboard</button></li>
+            <li><button onclick="showView('simulator')" class="hover:text-white transition">What-If Simulator</button></li>
+            <li><button onclick="showView('challenges')" class="hover:text-white transition">Eco Challenges</button></li>
+          </ul>
+        </div>
+
+        <div class="md:col-span-4 space-y-3">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-emerald">Transparency &amp; Credit</h4>
+          <p class="text-xs text-white/70 leading-relaxed">
+            Calculation models adhere to CEA India Baseline, DEFRA, and IPCC greenhouse gas assessment frameworks.
+          </p>
+          <div class="p-3.5 bg-white/5 rounded-xl border border-white/10">
+            <p class="text-xs text-white/90 font-medium">
+              Designed &amp; Developed by <strong class="text-white">Team Triple Impact</strong><br />
+              Lead Developer: Shashank Shekhar Tiwari
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-white/50">
+        <p>&copy; 2026 ORCHIDS. All rights reserved.</p>
+        <p class="mt-2 sm:mt-0 font-medium text-white/70">
+          Designed &amp; Developed by Team Triple Impact • Lead Developer: Shashank Shekhar Tiwari
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= JAVASCRIPT APPLICATION CORE ================= -->
+  <script>
+    // State Management
+    let currentCalcStep = 1;
+    let latestCalculation = null;
+
+    // Challenge Definitions
+    const ECO_CHALLENGES = [
+      {
+        id: 'c1',
+        title: '7-Day Energy Awareness Sprint',
+        category: 'Energy',
+        difficulty: 'Easy',
+        desc: 'Unplug phantom standby electronics and keep air conditioning set at 25°C or higher.',
+        impact: '~15 kg CO₂e avoided'
+      },
+      {
+        id: 'c2',
+        title: 'Public Transit Week',
+        category: 'Transport',
+        difficulty: 'Medium',
+        desc: 'Replace 4 days of solo driving with the city bus, metro, or carpooling.',
+        impact: '~32 kg CO₂e avoided'
+      },
+      {
+        id: 'c3',
+        title: 'Zero Food Waste Sprint',
+        category: 'Food',
+        difficulty: 'Easy',
+        desc: 'Plan grocery lists carefully, eat all refrigerator leftovers, and compost food scraps.',
+        impact: '~18 kg CO₂e avoided'
+      },
+      {
+        id: 'c4',
+        title: 'Plastic Elimination Sprint',
+        category: 'Waste',
+        difficulty: 'Medium',
+        desc: 'Refuse all single-use plastic carry bags, disposable water bottles, and plastic cutlery for 7 days.',
+        impact: '~8 kg CO₂e avoided'
+      },
+      {
+        id: 'c5',
+        title: 'Plant-Powered Week',
+        category: 'Food',
+        difficulty: 'Challenging',
+        desc: 'Commit to 100% vegetarian or plant-based meals for an entire week.',
+        impact: '~28 kg CO₂e avoided'
+      }
+    ];
+
+    // Navigation Switcher
+    function showView(viewName) {
+      document.querySelectorAll('.view-panel').forEach(el => el.classList.add('hidden'));
+      const target = document.getElementById('view-' + viewName);
+      if (target) {
+        target.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      if (viewName === 'dashboard' && !latestCalculation) {
+        executeCalculation();
+      }
+      if (viewName === 'challenges') {
+        renderChallenges();
+      }
+      lucide.createIcons();
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    // Step Navigation in Calculator
+    function updateStepIndicator() {
+      for (let i = 1; i <= 5; i++) {
+        const stepPanel = document.getElementById('calcStep' + i);
+        const navLabel = document.getElementById('navStep' + i);
+        if (i === currentCalcStep) {
+          stepPanel.classList.remove('hidden');
+          navLabel.className = 'text-emerald font-bold';
+        } else {
+          stepPanel.classList.add('hidden');
+          navLabel.className = 'text-charcoal/60';
+        }
+      }
+
+      const percent = (currentCalcStep * 20);
+      document.getElementById('stepProgressBar').style.width = percent + '%';
+      document.getElementById('stepPercentIndicator').innerText = percent + '% Completed';
+
+      const labels = [
+        'Home & Energy',
+        'Transportation & Travel',
+        'Food & Nutrition',
+        'Waste & Lifestyle',
+        'Review & Verification'
+      ];
+      document.getElementById('stepLabelIndicator').innerText = `Step ${currentCalcStep} of 5: ${labels[currentCalcStep - 1]}`;
+
+      const btnPrev = document.getElementById('btnPrevStep');
+      const btnNext = document.getElementById('btnNextStep');
+      const btnCalc = document.getElementById('btnCalculateFinal');
+
+      if (currentCalcStep === 1) {
+        btnPrev.classList.add('hidden');
+      } else {
+        btnPrev.classList.remove('hidden');
+      }
+
+      if (currentCalcStep === 5) {
+        btnNext.classList.add('hidden');
+        btnCalc.classList.remove('hidden');
+        populateReviewSummary();
+      } else {
+        btnNext.classList.remove('hidden');
+        btnCalc.classList.add('hidden');
+      }
+
+      lucide.createIcons();
+    }
+
+    function goToNextStep() {
+      if (currentCalcStep < 5) {
+        currentCalcStep++;
+        updateStepIndicator();
+        window.scrollTo({ top: 120, behavior: 'smooth' });
+      }
+    }
+
+    function goToPrevStep() {
+      if (currentCalcStep > 1) {
+        currentCalcStep--;
+        updateStepIndicator();
+        window.scrollTo({ top: 120, behavior: 'smooth' });
+      }
+    }
+
+    function populateReviewSummary() {
+      const kwh = parseFloat(document.getElementById('inputElectricity').value) || 0;
+      const people = parseInt(document.getElementById('inputHousehold').value) || 1;
+      const fuel = document.getElementById('inputCookingFuel').value.toUpperCase();
+      const carKm = parseFloat(document.getElementById('inputCarKm').value) || 0;
+      const carFuel = document.getElementById('inputCarFuel').value.toUpperCase();
+      const bikeKm = parseFloat(document.getElementById('inputMotorbikeKm').value) || 0;
+      const busKm = parseFloat(document.getElementById('inputBusKm').value) || 0;
+      const metroKm = parseFloat(document.getElementById('inputMetroKm').value) || 0;
+      const flightsShort = parseInt(document.getElementById('inputFlightsShort').value) || 0;
+      const flightsLong = parseInt(document.getElementById('inputFlightsLong').value) || 0;
+      const diet = document.querySelector('input[name="dietRadio"]:checked')?.value || 'vegetarian';
+      const wasteVol = document.getElementById('inputWasteVolume').value;
+      const recyclePct = document.getElementById('inputRecyclePercent').value;
+      const solar = document.getElementById('inputSolarClean').checked ? 'Yes' : 'No';
+
+      const container = document.getElementById('reviewSummaryContainer');
+      container.innerHTML = `
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div class="p-3 bg-offwhite rounded-xl border border-softgray space-y-1">
+            <span class="font-bold text-forest">1. Home Energy</span>
+            <p>Monthly Electricity: <strong>${kwh} kWh</strong></p>
+            <p>Household Size: <strong>${people} people</strong></p>
+            <p>Cooking Fuel: <strong>${fuel}</strong></p>
+            <p>Clean Solar / Tariff: <strong>${solar}</strong></p>
+          </div>
+          <div class="p-3 bg-offwhite rounded-xl border border-softgray space-y-1">
+            <span class="font-bold text-forest">2. Transportation</span>
+            <p>Car Travel: <strong>${carKm} km/mo (${carFuel})</strong></p>
+            <p>Two-Wheeler: <strong>${bikeKm} km/mo</strong></p>
+            <p>Transit: <strong>${busKm} km (Bus) + ${metroKm} km (Metro)</strong></p>
+            <p>Flights/Year: <strong>${flightsShort} domestic, ${flightsLong} intl</strong></p>
+          </div>
+          <div class="p-3 bg-offwhite rounded-xl border border-softgray space-y-1">
+            <span class="font-bold text-forest">3. Food & Diet</span>
+            <p>Dietary Pattern: <strong class="capitalize">${diet.replace('_', ' ')}</strong></p>
+            <p>Food Waste: <strong class="capitalize">${document.getElementById('inputFoodWaste').value}</strong></p>
+          </div>
+          <div class="p-3 bg-offwhite rounded-xl border border-softgray space-y-1">
+            <span class="font-bold text-forest">4. Waste</span>
+            <p>Waste Volume: <strong class="capitalize">${wasteVol}</strong></p>
+            <p>Recycling Rate: <strong>${recyclePct}%</strong></p>
+            <p>Composting: <strong>${document.getElementById('inputCompost').checked ? 'Yes' : 'No'}</strong></p>
+          </div>
+        </div>
+      `;
+    }
+
+    // Core Calculation Logic
+    function executeCalculation() {
+      const kwh = parseFloat(document.getElementById('inputElectricity').value) || 0;
+      const household = Math.max(1, parseInt(document.getElementById('inputHousehold').value) || 1);
+      const cookingFuel = document.getElementById('inputCookingFuel').value;
+      const lpgMonths = Math.max(0.5, parseFloat(document.getElementById('inputLpgMonths').value) || 1.5);
+      const hasSolar = document.getElementById('inputSolarClean').checked;
+
+      // 1. Energy Calculation (CEA Factor: 0.716 kg/kWh)
+      let electricityEmission = (kwh * 0.716);
+      if (hasSolar) electricityEmission *= 0.5; // 50% solar offset assumption
+
+      let cookingEmission = 0;
+      if (cookingFuel === 'lpg') {
+        // Standard 14.2 kg LPG cylinder = ~42.36 kg CO2e
+        cookingEmission = 42.36 / lpgMonths;
+      } else if (cookingFuel === 'png') {
+        cookingEmission = 25.0; // Approx 12.3 m3 PNG/mo * 2.03 kg CO2e
+      }
+      const monthlyEnergy = (electricityEmission + cookingEmission) / household;
+
+      // 2. Transportation Calculation
+      const carKm = parseFloat(document.getElementById('inputCarKm').value) || 0;
+      const carFuel = document.getElementById('inputCarFuel').value;
+      let carFactor = 0.170; // Petrol default
+      if (carFuel === 'diesel') carFactor = 0.171;
+      if (carFuel === 'ev') carFactor = 0.053;
+
+      const motorbikeKm = parseFloat(document.getElementById('inputMotorbikeKm').value) || 0;
+      const busKm = parseFloat(document.getElementById('inputBusKm').value) || 0;
+      const metroKm = parseFloat(document.getElementById('inputMetroKm').value) || 0;
+      const flightsShort = parseInt(document.getElementById('inputFlightsShort').value) || 0;
+      const flightsLong = parseInt(document.getElementById('inputFlightsLong').value) || 0;
+
+      const monthlyCar = carKm * carFactor;
+      const monthlyBike = motorbikeKm * 0.035;
+      const monthlyBus = busKm * 0.040;
+      const monthlyMetro = metroKm * 0.018;
+      const monthlyFlights = ((flightsShort * 150) + (flightsLong * 850)) / 12;
+
+      const monthlyTransport = monthlyCar + monthlyBike + monthlyBus + monthlyMetro + monthlyFlights;
+
+      // 3. Food Calculation
+      const diet = document.querySelector('input[name="dietRadio"]:checked')?.value || 'vegetarian';
+      let baseDietMonthly = 141; // Vegetarian baseline
+      if (diet === 'heavy_meat') baseDietMonthly = 275;
+      if (diet === 'medium_meat') baseDietMonthly = 208;
+      if (diet === 'pescatarian') baseDietMonthly = 158;
+      if (diet === 'vegan') baseDietMonthly = 125;
+
+      const foodWaste = document.getElementById('inputFoodWaste').value;
+      let wasteMult = 1.0;
+      if (foodWaste === 'low') wasteMult = 0.9;
+      if (foodWaste === 'high') wasteMult = 1.2;
+
+      const monthlyFood = baseDietMonthly * wasteMult;
+
+      // 4. Waste Calculation
+      const wasteVol = document.getElementById('inputWasteVolume').value;
+      let baseWasteMonthly = 45; // Average baseline
+      if (wasteVol === 'low') baseWasteMonthly = 25;
+      if (wasteVol === 'high') baseWasteMonthly = 75;
+
+      const recyclePct = parseFloat(document.getElementById('inputRecyclePercent').value) || 0;
+      const hasCompost = document.getElementById('inputCompost').checked;
+      const plasticHabit = document.getElementById('inputPlasticHabit').value;
+
+      let recycleDeduction = (recyclePct / 100) * 15;
+      if (hasCompost) recycleDeduction += 10;
+
+      let plasticExtra = 5;
+      if (plasticHabit === 'heavy') plasticExtra = 18;
+      if (plasticHabit === 'rare') plasticExtra = 1;
+
+      const monthlyWaste = Math.max(10, (baseWasteMonthly - recycleDeduction + plasticExtra));
+
+      // Totals
+      const totalMonthlyKg = monthlyEnergy + monthlyTransport + monthlyFood + monthlyWaste;
+      const totalAnnualTonnes = (totalMonthlyKg * 12) / 1000;
+
+      latestCalculation = {
+        date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+        energy: { monthlyKg: Math.round(monthlyEnergy), annualTonnes: Number(((monthlyEnergy * 12) / 1000).toFixed(2)) },
+        transport: { monthlyKg: Math.round(monthlyTransport), annualTonnes: Number(((monthlyTransport * 12) / 1000).toFixed(2)) },
+        food: { monthlyKg: Math.round(monthlyFood), annualTonnes: Number(((monthlyFood * 12) / 1000).toFixed(2)) },
+        waste: { monthlyKg: Math.round(monthlyWaste), annualTonnes: Number(((monthlyWaste * 12) / 1000).toFixed(2)) },
+        totalMonthlyKg: Math.round(totalMonthlyKg),
+        totalAnnualTonnes: Number(totalAnnualTonnes.toFixed(2))
+      };
+
+      renderDashboard();
+      showView('dashboard');
+    }
+
+    // Render Dashboard Results
+    function renderDashboard() {
+      if (!latestCalculation) return;
+
+      const c = latestCalculation;
+      document.getElementById('dashDate').innerText = c.date;
+      document.getElementById('cardTotalTonnes').innerText = c.totalAnnualTonnes.toFixed(2) + ' t';
+      document.getElementById('cardMonthlyKg').innerText = c.totalMonthlyKg + ' kg / mo';
+
+      // Benchmark Comparison (India: 1.9 t, Global: 4.7 t)
+      const indiaDiff = Math.round(((c.totalAnnualTonnes - 1.9) / 1.9) * 100);
+      const globalDiff = Math.round(((c.totalAnnualTonnes - 4.7) / 4.7) * 100);
+
+      const elIndia = document.getElementById('cardIndiaDiff');
+      if (indiaDiff > 0) {
+        elIndia.innerText = `+${indiaDiff}%`;
+        elIndia.className = 'text-3xl font-extrabold text-amber-600 mt-2';
+      } else {
+        elIndia.innerText = `${indiaDiff}%`;
+        elIndia.className = 'text-3xl font-extrabold text-emerald mt-2';
+      }
+
+      const elGlobal = document.getElementById('cardGlobalDiff');
+      if (globalDiff > 0) {
+        elGlobal.innerText = `+${globalDiff}%`;
+        elGlobal.className = 'text-3xl font-extrabold text-amber-600 mt-2';
+      } else {
+        elGlobal.innerText = `${globalDiff}%`;
+        elGlobal.className = 'text-3xl font-extrabold text-emerald mt-2';
+      }
+
+      // Category breakdown numbers
+      document.getElementById('valEnergyKg').innerText = c.energy.monthlyKg + ' kg';
+      document.getElementById('valEnergyTonnes').innerText = c.energy.annualTonnes + ' t / yr';
+
+      document.getElementById('valTransportKg').innerText = c.transport.monthlyKg + ' kg';
+      document.getElementById('valTransportTonnes').innerText = c.transport.annualTonnes + ' t / yr';
+
+      document.getElementById('valFoodKg').innerText = c.food.monthlyKg + ' kg';
+      document.getElementById('valFoodTonnes').innerText = c.food.annualTonnes + ' t / yr';
+
+      document.getElementById('valWasteKg').innerText = c.waste.monthlyKg + ' kg';
+      document.getElementById('valWasteTonnes').innerText = c.waste.annualTonnes + ' t / yr';
+
+      // Donut Chart Calculations
+      const total = c.totalMonthlyKg;
+      const pEnergy = Math.round((c.energy.monthlyKg / total) * 100);
+      const pTransport = Math.round((c.transport.monthlyKg / total) * 100);
+      const pFood = Math.round((c.food.monthlyKg / total) * 100);
+      const pWaste = Math.max(0, 100 - (pEnergy + pTransport + pFood));
+
+      document.getElementById('donutCenterVal').innerText = c.totalAnnualTonnes.toFixed(2);
+      document.getElementById('pctEnergy').innerText = pEnergy + '%';
+      document.getElementById('pctTransport').innerText = pTransport + '%';
+      document.getElementById('pctFood').innerText = pFood + '%';
+      document.getElementById('pctWaste').innerText = pWaste + '%';
+
+      // SVG stroke-dasharray & stroke-dashoffset
+      let offset = 0;
+      const updateDonutRing = (id, pct) => {
+        const ring = document.getElementById(id);
+        ring.setAttribute('stroke-dasharray', `${pct} ${100 - pct}`);
+        ring.setAttribute('stroke-dashoffset', `-${offset}`);
+        offset += pct;
+      };
+
+      updateDonutRing('donutEnergy', pEnergy);
+      updateDonutRing('donutTransport', pTransport);
+      updateDonutRing('donutFood', pFood);
+      updateDonutRing('donutWaste', pWaste);
+
+      // Context Bar Chart
+      const maxVal = Math.max(c.totalAnnualTonnes, 5.5);
+      document.getElementById('barLabelUser').innerText = c.totalAnnualTonnes.toFixed(2) + ' t';
+      document.getElementById('barUser').style.width = Math.min(100, Math.round((c.totalAnnualTonnes / maxVal) * 100)) + '%';
+
+      // Generate Personalized Recommendations
+      renderActionRoadmap();
+      runLiveSimulation();
+    }
+
+    // Dynamic Action Roadmap based on highest category
+    function renderActionRoadmap() {
+      if (!latestCalculation) return;
+      const c = latestCalculation;
+
+      const actions = [
+        {
+          cat: 'Energy',
+          title: 'Upgrade to 5-Star Inverter Appliances',
+          why: 'Home electricity represents a primary source of emissions on the Indian power grid (0.716 kg CO₂e/kWh).',
+          reduction: 'Up to 380 kg CO₂e / yr',
+          difficulty: 'Medium',
+          timeframe: '1–3 Months',
+          condition: c.energy.annualTonnes > 1.0
+        },
+        {
+          cat: 'Transport',
+          title: 'Shift 3 Days of Driving to Metro or Electric Bus',
+          why: 'Electric metro transit emits only 0.018 kg CO₂e/p-km compared to 0.170 kg/km in petrol cars.',
+          reduction: 'Up to 450 kg CO₂e / yr',
+          difficulty: 'Easy',
+          timeframe: 'Immediate',
+          condition: c.transport.annualTonnes > 0.8
+        },
+        {
+          cat: 'Food',
+          title: 'Incorporate 4 Plant-Based Dinners Per Week',
+          why: 'Plant-based proteins generate up to 80% lower greenhouse gas emissions than ruminant meat.',
+          reduction: 'Up to 320 kg CO₂e / yr',
+          difficulty: 'Easy',
+          timeframe: 'Immediate',
+          condition: true
+        },
+        {
+          cat: 'Waste',
+          title: 'Eliminate Single-Use Plastic & Compost Wet Waste',
+          why: 'Organic waste in anaerobic landfills decomposes into methane, a potent greenhouse gas.',
+          reduction: 'Up to 120 kg CO₂e / yr',
+          difficulty: 'Medium',
+          timeframe: '2 Weeks',
+          condition: true
+        }
+      ];
+
+      const container = document.getElementById('actionPlanList');
+      container.innerHTML = actions.filter(a => a.condition).map((action, idx) => `
+        <div class="p-5 bg-offwhite rounded-xl border border-softgray space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs uppercase font-extrabold px-2.5 py-0.5 rounded bg-mint text-forest">${action.cat}</span>
+            <span class="text-xs font-semibold text-charcoal/60">${action.difficulty} • ${action.timeframe}</span>
+          </div>
+          <h4 class="font-bold text-forest text-base">${action.title}</h4>
+          <p class="text-xs text-charcoal/70 leading-relaxed">${action.why}</p>
+          <div class="pt-2 border-t border-softgray flex items-center justify-between text-xs">
+            <span class="text-emerald font-bold">${action.reduction}</span>
+            <label class="flex items-center space-x-1.5 cursor-pointer text-charcoal/70">
+              <input type="checkbox" onchange="toggleActionStatus(this)" class="slider-accent w-4 h-4 rounded text-emerald focus:ring-emerald" />
+              <span>Mark Active</span>
+            </label>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleActionStatus(checkbox) {
+      if (checkbox.checked) {
+        checkbox.parentElement.classList.add('text-emerald', 'font-bold');
+        checkbox.nextElementSibling.innerText = 'In Progress';
+      } else {
+        checkbox.parentElement.classList.remove('text-emerald', 'font-bold');
+        checkbox.nextElementSibling.innerText = 'Mark Active';
+      }
+    }
+
+    // Live What-If Simulator
+    function runLiveSimulation() {
+      if (!latestCalculation) return;
+
+      const pCut = parseInt(document.getElementById('simPowerCut').value) || 0;
+      const tDays = parseInt(document.getElementById('simTransitDays').value) || 0;
+      const pMeals = parseInt(document.getElementById('simPlantMeals').value) || 0;
+      const rBoost = parseInt(document.getElementById('simRecycleBoost').value) || 0;
+
+      document.getElementById('simPowerCutVal').innerText = pCut + '%';
+      document.getElementById('simTransitDaysVal').innerText = tDays + ' days';
+      document.getElementById('simPlantMealsVal').innerText = pMeals + ' meals';
+
+      const rLabels = ['Baseline', '75% Recycling', 'Zero-Waste'];
+      document.getElementById('simRecycleBoostVal').innerText = rLabels[rBoost];
+
+      // Reductions
+      const savedEnergyKgYear = (latestCalculation.energy.monthlyKg * 12) * (pCut / 100);
+      const savedTransportKgYear = (tDays * 52) * 5.2; // ~5.2 kg avoided per transit-day shift
+      const savedFoodKgYear = (pMeals * 52) * 1.6; // ~1.6 kg avoided per plant meal
+      const savedWasteKgYear = rBoost * 80;
+
+      const totalAvoidedKg = Math.round(savedEnergyKgYear + savedTransportKgYear + savedFoodKgYear + savedWasteKgYear);
+      const totalAvoidedTonnes = totalAvoidedKg / 1000;
+
+      const baseTonnes = latestCalculation.totalAnnualTonnes;
+      const adjustedTonnes = Math.max(0.2, Number((baseTonnes - totalAvoidedTonnes).toFixed(2)));
+      const pctReduction = Math.min(100, Number(((totalAvoidedTonnes / baseTonnes) * 100).toFixed(1)));
+
+      document.getElementById('simCurrentFootprint').innerText = baseTonnes.toFixed(2) + ' t / yr';
+      document.getElementById('simAdjustedFootprint').innerText = adjustedTonnes.toFixed(2) + ' t / yr';
+      document.getElementById('simAvoidedAmount').innerText = `- ${totalAvoidedKg} kg CO₂e`;
+      document.getElementById('simPercentCut').innerText = `${pctReduction}% Reduction`;
+    }
+
+    function resetSimulator() {
+      document.getElementById('simPowerCut').value = 0;
+      document.getElementById('simTransitDays').value = 0;
+      document.getElementById('simPlantMeals').value = 0;
+      document.getElementById('simRecycleBoost').value = 0;
+      runLiveSimulation();
+    }
+
+    // Eco Challenges
+    function renderChallenges() {
+      const savedStatus = JSON.parse(localStorage.getItem('orchids_challenges') || '{}');
+      const container = document.getElementById('challengesContainer');
+
+      container.innerHTML = ECO_CHALLENGES.map(ch => {
+        const isDone = !!savedStatus[ch.id];
+        return `
+          <div class="bg-white p-6 rounded-2xl border ${isDone ? 'border-emerald bg-mint/10' : 'border-softgray'} shadow-sm space-y-4 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs uppercase font-extrabold px-2.5 py-0.5 rounded ${isDone ? 'bg-emerald text-white' : 'bg-mint text-forest'}">${ch.category}</span>
+                <span class="text-xs font-semibold text-charcoal/60">${ch.difficulty}</span>
+              </div>
+              <h3 class="font-bold text-forest text-lg">${ch.title}</h3>
+              <p class="text-xs text-charcoal/70 leading-relaxed">${ch.desc}</p>
+            </div>
+
+            <div class="pt-4 border-t border-softgray flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald">${ch.impact}</span>
+              <button onclick="toggleChallenge('${ch.id}')" class="px-4 py-1.5 rounded-lg text-xs font-bold transition ${isDone ? 'bg-emerald text-white' : 'bg-forest text-mint hover:bg-forest/90'}">
+                ${isDone ? 'Completed ✓' : 'Start Challenge'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function toggleChallenge(id) {
+      const savedStatus = JSON.parse(localStorage.getItem('orchids_challenges') || '{}');
+      savedStatus[id] = !savedStatus[id];
+      localStorage.setItem('orchids_challenges', JSON.stringify(savedStatus));
+      renderChallenges();
+    }
+
+    // LocalStorage Persistence
+    function saveCurrentRunToHistory() {
+      if (!latestCalculation) return;
+      const history = JSON.parse(localStorage.getItem('orchids_calc_history') || '[]');
+      history.unshift(latestCalculation);
+      localStorage.setItem('orchids_calc_history', JSON.stringify(history.slice(0, 10)));
+      alert('Your carbon footprint result has been saved to local browser storage.');
+    }
+
+    // PDF / Print Report Generator
+    function triggerPrintReport() {
+      if (!latestCalculation) {
+        alert('Please complete a calculation first.');
+        return;
+      }
+
+      const c = latestCalculation;
+      document.getElementById('pdfDate').innerText = c.date;
+      document.getElementById('pdfTotalTonnes').innerText = c.totalAnnualTonnes.toFixed(2) + ' t CO₂e / yr';
+      document.getElementById('pdfMonthlyKg').innerText = c.totalMonthlyKg + ' kg CO₂e / mo';
+
+      const tableBody = document.getElementById('pdfTableBody');
+      tableBody.innerHTML = `
+        <tr>
+          <td class="p-2 font-semibold">1. Home Energy &amp; Electricity</td>
+          <td class="p-2">${c.energy.monthlyKg} kg</td>
+          <td class="p-2">${c.energy.annualTonnes} tonnes</td>
+          <td class="p-2">${Math.round((c.energy.monthlyKg / c.totalMonthlyKg) * 100)}%</td>
+        </tr>
+        <tr>
+          <td class="p-2 font-semibold">2. Transportation &amp; Commute</td>
+          <td class="p-2">${c.transport.monthlyKg} kg</td>
+          <td class="p-2">${c.transport.annualTonnes} tonnes</td>
+          <td class="p-2">${Math.round((c.transport.monthlyKg / c.totalMonthlyKg) * 100)}%</td>
+        </tr>
+        <tr>
+          <td class="p-2 font-semibold">3. Food &amp; Nutrition</td>
+          <td class="p-2">${c.food.monthlyKg} kg</td>
+          <td class="p-2">${c.food.annualTonnes} tonnes</td>
+          <td class="p-2">${Math.round((c.food.monthlyKg / c.totalMonthlyKg) * 100)}%</td>
+        </tr>
+        <tr>
+          <td class="p-2 font-semibold">4. Waste &amp; Consumption</td>
+          <td class="p-2">${c.waste.monthlyKg} kg</td>
+          <td class="p-2">${c.waste.annualTonnes} tonnes</td>
+          <td class="p-2">${Math.round((c.waste.monthlyKg / c.totalMonthlyKg) * 100)}%</td>
+        </tr>
+      `;
+
+      const benchmarkList = document.getElementById('pdfBenchmarkList');
+      benchmarkList.innerHTML = `
+        <li>India National Average Baseline: <strong>1.90 tonnes CO₂e / year</strong></li>
+        <li>Paris Agreement 2030 Climate Limit: <strong>2.00 tonnes CO₂e / year</strong></li>
+        <li>Global Average per Capita: <strong>4.70 tonnes CO₂e / year</strong></li>
+      `;
+
+      const recs = document.getElementById('pdfRecommendationsList');
+      recs.innerHTML = `
+        <p>• <strong>Energy Conservation:</strong> Increase AC set point to 25°C and explore rooftop solar installations.</p>
+        <p>• <strong>Clean Mobility:</strong> Shift short journeys to walking/cycling and replace solo car driving with electric metro rail.</p>
+        <p>• <strong>Nutritional Efficiency:</strong> Increase plant-based meals and eliminate food surplus waste.</p>
+      `;
+
+      // Trigger browser print to PDF
+      const reportSection = document.getElementById('printReportSection');
+      reportSection.classList.remove('hidden');
+      window.print();
+      reportSection.classList.add('hidden');
+    }
+
+    // Initial Execution
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      executeCalculation(); // Run initial baseline demo
+      showView('home');
+    });
+  </script>
+</body>
+</html>
